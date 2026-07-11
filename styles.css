@@ -20,6 +20,31 @@
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
 
     font-size: 13px;
+
+    opacity: 0.28;
+    transition: opacity 180ms ease, box-shadow 180ms ease;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+#english-trainer-panel:hover,
+#english-trainer-panel:focus-within,
+#english-trainer-panel.english-trainer-panel-dragging {
+    opacity: 1;
+}
+
+#english-trainer-panel.english-trainer-panel-dragging {
+    cursor: grabbing;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+
+#english-trainer-panel input,
+#english-trainer-panel select,
+#english-trainer-panel button {
+    cursor: auto;
+    user-select: auto;
+    touch-action: auto;
 }
 
 
@@ -215,4 +240,3 @@
 .english-trainer-sentence-button:active {
     transform: scale(0.95);
 }
-

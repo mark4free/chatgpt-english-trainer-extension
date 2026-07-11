@@ -268,6 +268,155 @@ function saveSpeechRate(rate) {
     });
 }
 
+function makeTrainerPanelDraggable(panel) {
+    let dragState = null;
+
+    function clampPanelPosition(left, top) {
+        const maxLeft = Math.max(
+            0,
+            window.innerWidth - panel.offsetWidth
+        );
+        const maxTop = Math.max(
+            0,
+            window.innerHeight - panel.offsetHeight
+        );
+
+        return {
+            left: Math.min(Math.max(0, left), maxLeft),
+            top: Math.min(Math.max(0, top), maxTop)
+        };
+    }
+
+    function setPanelPosition(left, top) {
+        const position =
+            clampPanelPosition(left, top);
+
+        panel.style.left = position.left + "px";
+        panel.style.top = position.top + "px";
+        panel.style.right = "auto";
+        panel.style.bottom = "auto";
+
+        return position;
+    }
+
+    chrome.storage.local.get(
+        ["trainerPanelPosition"],
+        function (settings) {
+            const position =
+                settings.trainerPanelPosition;
+
+            if (
+                position &&
+                typeof position.left === "number" &&
+                typeof position.top === "number"
+            ) {
+                setPanelPosition(
+                    position.left,
+                    position.top
+                );
+            }
+        }
+    );
+
+    panel.addEventListener(
+        "pointerdown",
+        function (event) {
+            if (
+                event.button !== 0 ||
+                event.target.closest(
+                    "input, select, button"
+                )
+            ) {
+                return;
+            }
+
+            const panelRect =
+                panel.getBoundingClientRect();
+
+            dragState = {
+                pointerId: event.pointerId,
+                offsetX:
+                    event.clientX - panelRect.left,
+                offsetY:
+                    event.clientY - panelRect.top
+            };
+
+            panel.setPointerCapture(event.pointerId);
+            panel.classList.add(
+                "english-trainer-panel-dragging"
+            );
+            event.preventDefault();
+        }
+    );
+
+    panel.addEventListener(
+        "pointermove",
+        function (event) {
+            if (
+                !dragState ||
+                event.pointerId !== dragState.pointerId
+            ) {
+                return;
+            }
+
+            setPanelPosition(
+                event.clientX - dragState.offsetX,
+                event.clientY - dragState.offsetY
+            );
+        }
+    );
+
+    function finishDragging(event) {
+        if (
+            !dragState ||
+            event.pointerId !== dragState.pointerId
+        ) {
+            return;
+        }
+
+        const panelRect =
+            panel.getBoundingClientRect();
+        const position = setPanelPosition(
+            panelRect.left,
+            panelRect.top
+        );
+
+        chrome.storage.local.set({
+            trainerPanelPosition: position
+        });
+
+        panel.classList.remove(
+            "english-trainer-panel-dragging"
+        );
+        dragState = null;
+    }
+
+    panel.addEventListener(
+        "pointerup",
+        finishDragging
+    );
+    panel.addEventListener(
+        "pointercancel",
+        finishDragging
+    );
+
+    window.addEventListener(
+        "resize",
+        function () {
+            const panelRect =
+                panel.getBoundingClientRect();
+            const position = setPanelPosition(
+                panelRect.left,
+                panelRect.top
+            );
+
+            chrome.storage.local.set({
+                trainerPanelPosition: position
+            });
+        }
+    );
+}
+
 
 function loadAvailableVoices() {
     const allVoices =
@@ -1335,6 +1484,8 @@ function addTrainerPanel() {
     );
 
     document.body.appendChild(panel);
+
+    makeTrainerPanelDraggable(panel);
 
 
     loadSpeechSettings(
