@@ -1,0 +1,218 @@
+#english-trainer-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: 260px;
+    padding: 12px;
+
+    border: 1px solid rgba(127, 127, 127, 0.25);
+    border-radius: 12px;
+
+    background-color: rgba(255, 255, 255, 0.96);
+    color: #222;
+
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+
+    font-size: 13px;
+}
+
+
+#english-trainer-panel label {
+    font-weight: 600;
+}
+
+.english-trainer-voice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+
+.english-trainer-word-hint {
+    color: #666;
+
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: right;
+
+    user-select: none;
+}
+
+#english-trainer-voice {
+    width: 100%;
+    padding: 7px 8px;
+
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 7px;
+
+    background-color: white;
+    color: #222;
+
+    font-size: 13px;
+}
+
+
+.english-trainer-rate-row {
+    display: grid;
+    grid-template-columns: auto 1fr 38px;
+    align-items: center;
+    gap: 8px;
+}
+
+
+#english-trainer-rate {
+    width: 100%;
+    cursor: pointer;
+}
+
+
+#english-trainer-rate-value {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+
+#english-trainer-button {
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #10a37f;
+    color: white;
+
+    font-size: 14px;
+    cursor: pointer;
+}
+
+
+#english-trainer-button:hover {
+    background-color: #0d8f70;
+}
+
+#english-trainer-toast {
+    position: fixed;
+    right: 24px;
+    bottom: 190px;
+    z-index: 10000;
+
+    max-width: 320px;
+    padding: 10px 14px;
+    border-radius: 8px;
+
+    background-color: #2f2f2f;
+    color: white;
+
+    font-size: 14px;
+    line-height: 1.4;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+
+    pointer-events: none;
+
+    animation: english-trainer-toast-in 0.2s ease-out;
+}
+
+
+@keyframes english-trainer-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.english-trainer-inline-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+    margin-left: 7px;
+    padding: 0;
+
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 6px;
+
+    background-color: transparent;
+    color: inherit;
+
+    cursor: pointer;
+    vertical-align: middle;
+
+    user-select: none;
+}
+
+
+.english-trainer-inline-button::before {
+    content: "🔊";
+
+    font-size: 13px;
+    line-height: 1;
+}
+
+
+.english-trainer-inline-button:hover {
+    background-color: rgba(127, 127, 127, 0.15);
+}
+
+
+.english-trainer-inline-button:active {
+    transform: scale(0.95);
+}
+
+.english-trainer-sentence-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-top: 6px;
+    margin-bottom: 10px;
+
+    user-select: none;
+}
+
+
+.english-trainer-sentence-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 38px;
+    height: 28px;
+    padding: 0 8px;
+
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    border-radius: 6px;
+
+    background-color: transparent;
+    color: inherit;
+
+    font-size: 13px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+.english-trainer-sentence-button:hover {
+    background-color: rgba(127, 127, 127, 0.15);
+}
+
+
+.english-trainer-sentence-button:active {
+    transform: scale(0.95);
+}
+
