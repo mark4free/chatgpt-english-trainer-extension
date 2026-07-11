@@ -204,3 +204,7 @@ chatgpt-english-trainer-extension/
 ```text
 0.1.0
 ```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
