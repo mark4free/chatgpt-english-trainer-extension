@@ -174,6 +174,40 @@ function isEnglishText(text) {
     return containsEnglish && !containsChinese;
 }
 
+function extractSpeakableEnglish(text) {
+    if (!/[A-Za-z]/.test(text)) {
+        return "";
+    }
+
+    if (!/[\u4e00-\u9fff]/.test(text)) {
+        return text.trim();
+    }
+
+    return text
+        .split(/[\u4e00-\u9fff]+/)
+        .map(
+            function (part) {
+                return part
+                    .trim()
+                    .replace(
+                        /^[^A-Za-z0-9]+/,
+                        ""
+                    )
+                    .replace(
+                        /[^A-Za-z0-9.!?]+$/,
+                        ""
+                    );
+            }
+        )
+        .filter(
+            function (part) {
+                return /[A-Za-z]/.test(part);
+            }
+        )
+        .join(" ")
+        .trim();
+}
+
 function extractEnglishLines(textElement) {
     const cleanText =
         getCleanText(textElement);
@@ -184,15 +218,14 @@ function extractEnglishLines(textElement) {
     return lines
         .map(
             function (line) {
-                return line.trim();
+                return extractSpeakableEnglish(
+                    line.trim()
+                );
             }
         )
         .filter(
             function (line) {
-                return (
-                    line &&
-                    isEnglishText(line)
-                );
+                return Boolean(line);
             }
         );
 }
@@ -999,6 +1032,8 @@ function addInlineButtonsForTextElement(
         lineBreak: null
     });
 
+    const placedEnglishLines = [];
+
     lineGroups.forEach(
         function (lineGroup) {
             const lineText =
@@ -1026,6 +1061,10 @@ function addInlineButtonsForTextElement(
                     lineText
                 );
 
+            placedEnglishLines.push(
+                lineText
+            );
+
             if (lineGroup.lineBreak) {
                 textElement.insertBefore(
                     button,
@@ -1036,6 +1075,35 @@ function addInlineButtonsForTextElement(
                     button
                 );
             }
+        }
+    );
+
+    const remainingEnglishLines =
+        englishLines.slice();
+
+    placedEnglishLines.forEach(
+        function (placedLine) {
+            const matchingIndex =
+                remainingEnglishLines.indexOf(
+                    placedLine
+                );
+
+            if (matchingIndex !== -1) {
+                remainingEnglishLines.splice(
+                    matchingIndex,
+                    1
+                );
+            }
+        }
+    );
+
+    remainingEnglishLines.forEach(
+        function (englishLine) {
+            textElement.appendChild(
+                createInlineSpeechButton(
+                    englishLine
+                )
+            );
         }
     );
 }
