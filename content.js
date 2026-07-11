@@ -164,23 +164,29 @@ function extractEnglishText(assistantMessage) {
     return allEnglishLines.join(" ");
 }
 
-function isEnglishText(text) {
-    const containsEnglish =
-        /[A-Za-z]/.test(text);
-
-    const containsChinese =
-        /[\u4e00-\u9fff]/.test(text);
-
-    return containsEnglish && !containsChinese;
-}
-
 function extractSpeakableEnglish(text) {
     if (!/[A-Za-z]/.test(text)) {
         return "";
     }
 
-    if (!/[\u4e00-\u9fff]/.test(text)) {
+    const chineseCharacters =
+        text.match(/[\u4e00-\u9fff]/g) || [];
+
+    if (chineseCharacters.length === 0) {
         return text.trim();
+    }
+
+    const englishLetters =
+        text.match(/[A-Za-z]/g) || [];
+    const languageCharacterCount =
+        englishLetters.length +
+        chineseCharacters.length;
+    const englishRatio =
+        englishLetters.length /
+        languageCharacterCount;
+
+    if (englishRatio <= 0.6) {
+        return "";
     }
 
     return text
@@ -988,116 +994,7 @@ function addInlineButtonsForTextElement(
         }
     );
 
-    const lineGroups = [];
-
-    let currentLineNodes = [];
-
-    const childNodes =
-        Array.from(
-            textElement.childNodes
-        );
-
-    childNodes.forEach(
-        function (node) {
-            const isLineBreak =
-                node.nodeType ===
-                    Node.ELEMENT_NODE &&
-                node.tagName === "BR";
-
-            if (isLineBreak) {
-                lineGroups.push({
-                    nodes: currentLineNodes,
-                    lineBreak: node
-                });
-
-                currentLineNodes = [];
-                return;
-            }
-
-            const isTrainerButton =
-                node.nodeType ===
-                    Node.ELEMENT_NODE &&
-                node.classList.contains(
-                    "english-trainer-inline-button"
-                );
-
-            if (!isTrainerButton) {
-                currentLineNodes.push(node);
-            }
-        }
-    );
-
-    lineGroups.push({
-        nodes: currentLineNodes,
-        lineBreak: null
-    });
-
-    const placedEnglishLines = [];
-
-    lineGroups.forEach(
-        function (lineGroup) {
-            const lineText =
-                lineGroup.nodes
-                    .map(
-                        function (node) {
-                            return (
-                                node.textContent ||
-                                ""
-                            );
-                        }
-                    )
-                    .join("")
-                    .trim();
-
-            if (
-                !lineText ||
-                !isEnglishText(lineText)
-            ) {
-                return;
-            }
-
-            const button =
-                createInlineSpeechButton(
-                    lineText
-                );
-
-            placedEnglishLines.push(
-                lineText
-            );
-
-            if (lineGroup.lineBreak) {
-                textElement.insertBefore(
-                    button,
-                    lineGroup.lineBreak
-                );
-            } else {
-                textElement.appendChild(
-                    button
-                );
-            }
-        }
-    );
-
-    const remainingEnglishLines =
-        englishLines.slice();
-
-    placedEnglishLines.forEach(
-        function (placedLine) {
-            const matchingIndex =
-                remainingEnglishLines.indexOf(
-                    placedLine
-                );
-
-            if (matchingIndex !== -1) {
-                remainingEnglishLines.splice(
-                    matchingIndex,
-                    1
-                );
-            }
-        }
-    );
-
-    remainingEnglishLines.forEach(
+    englishLines.forEach(
         function (englishLine) {
             textElement.appendChild(
                 createInlineSpeechButton(
@@ -1196,7 +1093,19 @@ function addSentenceButtons() {
             const inlineTextElements =
                 assistantMessage.querySelectorAll(
                     ".markdown p, " +
-                    ".markdown li"
+                    ".markdown li, " +
+                    ".markdown h1, " +
+                    ".markdown h2, " +
+                    ".markdown h3, " +
+                    ".markdown h4, " +
+                    ".markdown h5, " +
+                    ".markdown h6, " +
+                    WRITING_EDITOR_SELECTOR + " h1, " +
+                    WRITING_EDITOR_SELECTOR + " h2, " +
+                    WRITING_EDITOR_SELECTOR + " h3, " +
+                    WRITING_EDITOR_SELECTOR + " h4, " +
+                    WRITING_EDITOR_SELECTOR + " h5, " +
+                    WRITING_EDITOR_SELECTOR + " h6"
                 );
 
             inlineTextElements.forEach(
@@ -1206,7 +1115,15 @@ function addSentenceButtons() {
                             WRITING_EDITOR_SELECTOR
                         );
 
-                    if (insideWritingEditor) {
+                    const isHeading =
+                        /^H[1-6]$/.test(
+                            textElement.tagName
+                        );
+
+                    if (
+                        insideWritingEditor &&
+                        !isHeading
+                    ) {
                         return;
                     }
 
