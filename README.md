@@ -211,7 +211,7 @@ chatgpt-english-trainer-extension/
 当前版本：
 
 ```text
-0.1.0
+0.2.0
 ```
 
 ## License

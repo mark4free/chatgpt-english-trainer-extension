@@ -1510,6 +1510,7 @@ pageObserver.observe(
     document.body,
     {
         childList: true,
+        characterData: true,
         subtree: true
     }
 );
