@@ -166,6 +166,7 @@ chatgpt-english-trainer-extension/
 ├── content.js
 ├── styles.css
 ├── README.md
+├── LICENSE
 └── .gitignore
 ```
 
@@ -175,6 +176,7 @@ chatgpt-english-trainer-extension/
 - `content.js`：识别 ChatGPT 回答并实现朗读功能
 - `styles.css`：控制播放按钮和设置面板的视觉样式
 - `README.md`：安装和使用说明
+- `LICENSE`：MIT 开源许可证
 - `.gitignore`：排除不需要提交的本地文件
 
 ## 已知限制
